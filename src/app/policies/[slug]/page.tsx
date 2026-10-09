@@ -19,7 +19,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
           <p>Because spices are food items, opened pouches cannot be returned. However, if you receive a damaged, defective, or incorrect pack, please contact our support email within 48 hours of delivery with photos for a prompt replacement or full refund.</p>
         )}
         {slug === "privacy" && (
-          <p>We collect only the customer details (name, email, phone, and shipping address) necessary to fulfill your orders and never sell your personal data to third parties. Payments are processed securely via Razorpay.</p>
+          <p>We collect only the customer details (name, email, phone, and shipping address) necessary to fulfill your orders and never sell your personal data to third parties.</p>
         )}
         {slug === "terms" && (
           <p>By placing an order on Homelike Spice Co., you agree to provide accurate delivery information. All product weights (50 g) and prices in INR are clearly displayed prior to checkout.</p>
