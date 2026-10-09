@@ -2,19 +2,14 @@
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { supabase } from "@/lib/supabase";
-import Script from "next/script";
 import Link from "next/link";
-import { Trash2, Plus, Minus, CreditCard, Banknote, MapPin } from "lucide-react";
+import { Trash2, Plus, Minus, MapPin } from "lucide-react";
 
 export default function CartPage() {
   const { items, updateQuantity, removeFromCart, clearCart, subtotal } = useCart();
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"ONLINE" | "COD">("COD");
-  const [orderSuccess, setOrderSuccess] = useState<{
-    orderNumber: string;
-    method: "ONLINE" | "COD";
-  } | null>(null);
+  const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -76,6 +71,8 @@ export default function CartPage() {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // We automatically send "COD" as the only payment method now
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,51 +80,17 @@ export default function CartPage() {
           userId: user?.id || null,
           customer,
           items,
-          paymentMethod,
+          paymentMethod: "COD", 
         }),
       });
+      
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
 
-      if (paymentMethod === "COD") {
-        clearCart();
-        setOrderSuccess({ orderNumber: data.orderNumber, method: "COD" });
-        return;
-      }
+      // Clear the cart and show success screen immediately
+      clearCart();
+      setOrderSuccess(data.orderNumber);
 
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: data.amount * 100,
-        currency: "INR",
-        name: "Homelike Spice Co.",
-        description: `Order ${data.orderNumber}`,
-        order_id: data.razorpayOrderId,
-        handler: async function (response: any) {
-          const verifyRes = await fetch("/api/payment/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...response,
-              orderId: data.orderId,
-            }),
-          });
-          if (verifyRes.ok) {
-            clearCart();
-            setOrderSuccess({ orderNumber: data.orderNumber, method: "ONLINE" });
-          } else {
-            alert("Payment verification failed. Please contact support.");
-          }
-        },
-        prefill: {
-          name: customer.name,
-          email: customer.email,
-          contact: customer.phone,
-        },
-        theme: { color: "#3A5A28" },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -141,13 +104,10 @@ export default function CartPage() {
         <div className="bg-white p-8 rounded-2xl border border-wood/10 space-y-4 shadow-sm">
           <h1 className="text-3xl font-bold text-forest">Thank You for Your Order!</h1>
           <p className="text-wood">
-            Your Order ID is <strong>{orderSuccess.orderNumber}</strong>.
+            Your Order ID is <strong>{orderSuccess}</strong>.
           </p>
           <p className="text-sm font-medium text-wood bg-parchment py-2 px-4 rounded-lg inline-block">
-            Payment Method:{" "}
-            {orderSuccess.method === "COD"
-              ? "Cash on Delivery (Pay when your order arrives)"
-              : "Paid Online via Razorpay"}
+            Payment Method: Cash on Delivery
           </p>
           <p className="text-sm text-wood/75">
             Estimated preparation: 24–48 hours. Estimated delivery: 3–5 business days after dispatch.
@@ -167,7 +127,6 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <h1 className="text-3xl font-bold text-wood mb-8">Your Shopping Cart</h1>
 
       {items.length === 0 ? (
@@ -309,55 +268,14 @@ export default function CartPage() {
               />
             </div>
 
-            <div className="pt-3 space-y-2">
-              <label className="block text-sm font-bold text-wood">
-                Select Payment Method
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("COD")}
-                  className={`p-3.5 rounded-xl border text-left flex items-center gap-3 transition ${
-                    paymentMethod === "COD"
-                      ? "border-forest bg-forest/10 text-forest font-bold"
-                      : "border-wood/20 text-wood/80 hover:bg-cream"
-                  }`}
-                >
-                  <Banknote className="w-5 h-5 flex-shrink-0" />
-                  <div>
-                    <div className="text-sm">Cash on Delivery</div>
-                    <div className="text-xs opacity-75">Pay at your doorstep</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("ONLINE")}
-                  className={`p-3.5 rounded-xl border text-left flex items-center gap-3 transition ${
-                    paymentMethod === "ONLINE"
-                      ? "border-forest bg-forest/10 text-forest font-bold"
-                      : "border-wood/20 text-wood/80 hover:bg-cream"
-                  }`}
-                >
-                  <CreditCard className="w-5 h-5 flex-shrink-0" />
-                  <div>
-                    <div className="text-sm">Pay Online</div>
-                    <div className="text-xs opacity-75">UPI, Cards, NetBanking</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
             <button
               disabled={loading}
               type="submit"
-              className="w-full bg-forest text-white py-3.5 rounded-full font-semibold hover:bg-forest/90 transition mt-2"
+              className="w-full bg-forest text-white py-3.5 rounded-full font-semibold hover:bg-forest/90 transition mt-4"
             >
               {loading
                 ? "Processing Order..."
-                : paymentMethod === "COD"
-                ? `Place COD Order (₹${total.toFixed(2)})`
-                : `Pay ₹${total.toFixed(2)} Online`}
+                : `Place COD Order (₹${total.toFixed(2)})`}
             </button>
           </form>
         </div>
