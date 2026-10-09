@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 
 export default function HomePage() {
@@ -90,11 +91,18 @@ export default function HomePage() {
 
       {/* 4. BRAND STORY SECTION */}
       <section className="bg-[#221C16] text-[#FDFBF7] py-24 px-4">
+        {/* You accidentally deleted this grid container div below! */}
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div className="h-96 bg-[#FDFBF7]/10 rounded-2xl overflow-hidden relative flex items-center justify-center">
-            {/* Replace this div with an actual image of you or your spices later */}
-            <span className="text-[#FDFBF7]/50 font-light italic">Image: Spices on a rustic table</span>
+          
+          <div className="h-96 w-full rounded-2xl overflow-hidden relative">
+            <Image 
+              src="/images/brand-story.jpg" 
+              alt="Homelike Spice Co. authentic spices" 
+              fill
+              className="object-cover transition-transform duration-700 hover:scale-105"
+            />
           </div>
+
           <div>
             <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
               Born from a simple realization in New Delhi.
@@ -109,6 +117,7 @@ export default function HomePage() {
               Read Our Story
             </Link>
           </div>
+
         </div>
       </section>
     </main>
