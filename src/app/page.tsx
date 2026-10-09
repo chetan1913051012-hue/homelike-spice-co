@@ -21,7 +21,7 @@ export default function HomePage() {
     image_url: "/images/haldi.jpg" // Changed to local path
   },
   {
-    slug: "dhania",
+    slug: "dhaniya",
     name: "Dhania Powder",
     description: "Slow-Roasted • Coarse Ground Coriander",
     price: 55,
