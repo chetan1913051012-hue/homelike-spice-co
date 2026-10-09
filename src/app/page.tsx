@@ -9,7 +9,7 @@ export default function HomePage() {
     slug: "lal-mirch",
     name: "Lal Mirch Powder",
     description: "Stemless Red Chilli • Stone-ground",
-    price: 75,
+    price: 30,
     pack_size: "50g",
     image_url: "/images/mirch.jpg" // Changed to local path
   },
@@ -17,7 +17,7 @@ export default function HomePage() {
     slug: "haldi",
     name: "Lakadong Haldi",
     description: "High Curcumin • Sun-Dried Turmeric",
-    price: 65,
+    price: 35,
     pack_size: "50g",
     image_url: "/images/haldi.jpg" // Changed to local path
   },
@@ -25,7 +25,7 @@ export default function HomePage() {
     slug: "dhaniya",
     name: "Dhania Powder",
     description: "Slow-Roasted • Coarse Ground Coriander",
-    price: 55,
+    price: 30,
     pack_size: "50g",
     image_url: "/images/dhaniya.jpg" // Changed to local path
   }
