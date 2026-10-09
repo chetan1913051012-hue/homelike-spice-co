@@ -10,78 +10,48 @@ export default function ProductCard({ product }: { product: any }) {
   const [qty, setQty] = useState(1);
 
   return (
-    <div className="bg-white rounded-2xl border border-wood/10 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
-      <Link href={`/shop/${product.slug}`} className="relative h-64 w-full bg-parchment block">
-        <Image
-          src={product.image_url}
+    <div className="group relative rounded-2xl overflow-hidden bg-white border border-wood/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] flex flex-col">
+      
+      {/* Image Container with Zoom Effect - Keeping your Next.js Link & Image */}
+      <Link href={`/shop/${product.slug}`} className="relative h-64 w-full overflow-hidden bg-parchment/30 block">
+        <Image 
+          src={product.image_url} 
           alt={product.name}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <span className="absolute top-3 right-3 bg-cream/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-wood border border-wood/10">
+        {/* Your existing pack size tag */}
+        <span className="absolute top-3 right-3 bg-cream/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-wood">
           {product.pack_size}
         </span>
+        {/* New Premium Tag */}
+        <div className="absolute top-3 left-3 bg-white/70 backdrop-blur-md border border-white/40 shadow-sm px-3 py-1 rounded-full text-xs font-bold text-forest uppercase tracking-wider">
+          Best Seller
+        </div>
       </Link>
 
-      <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+      {/* Content Area */}
+      <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
           <Link href={`/shop/${product.slug}`}>
-            <h3 className="text-lg font-bold text-wood hover:text-forest transition">
+            <h3 className="text-xl font-bold text-wood hover:text-forest transition-colors mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
               {product.name}
             </h3>
           </Link>
-          <p className="text-sm text-wood/75 mt-1 line-clamp-2">{product.tagline}</p>
+          {/* Using your existing database fields if available */}
+          <p className="text-sm text-wood/60 mb-4">{product.description || "Premium unadulterated spice"}</p>
+          <p className="text-lg font-semibold text-forest mb-4">₹{product.price}</p>
         </div>
-
-        <div className="pt-2 border-t border-wood/10 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xl font-bold text-wood">₹{Number(product.price).toFixed(2)}</span>
-            <span className={`text-xs font-medium ${product.stock > 0 ? "text-forest" : "text-chilli"}`}>
-              {product.stock > 0 ? "In Stock" : "Out of Stock"}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center border border-wood/20 rounded-full px-2 py-1">
-              <button
-                type="button"
-                onClick={() => setQty(Math.max(1, qty - 1))}
-                className="p-1 text-wood hover:text-forest"
-              >
-                <Minus className="w-3.5 h-3.5" />
-              </button>
-              <span className="px-3 text-sm font-semibold text-wood">{qty}</span>
-              <button
-                type="button"
-                onClick={() => setQty(qty + 1)}
-                className="p-1 text-wood hover:text-forest"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <button
-              type="button"
-              disabled={product.stock <= 0}
-              onClick={() =>
-                addToCart(
-                  {
-                    id: product.id,
-                    name: product.name,
-                    slug: product.slug,
-                    pack_size: product.pack_size,
-                    price: Number(product.price),
-                    image_url: product.image_url,
-                  },
-                  qty
-                )
-              }
-              className="flex-1 bg-forest text-white py-2.5 px-4 rounded-full text-sm font-semibold hover:bg-forest/90 transition flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <ShoppingBag className="w-4 h-4" />
-              Add to Cart
-            </button>
-          </div>
+        
+        {/* Hover Reveal Button - Connected to your existing useCart hook! */}
+        <div className="overflow-hidden h-0 group-hover:h-12 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 mt-2">
+          <button 
+            onClick={() => addToCart(product, qty)}
+            className="w-full bg-wood text-parchment py-3 rounded-xl font-medium transition-colors hover:bg-forest flex items-center justify-center gap-2"
+          >
+            <ShoppingBag size={18} />
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>
