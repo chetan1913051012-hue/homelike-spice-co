@@ -43,8 +43,8 @@ export default function ProductCard({ product }: { product: any }) {
           <p className="text-lg font-semibold text-forest mb-4">₹{product.price}</p>
         </div>
         
-        {/* Hover Reveal Button - Connected to your existing useCart hook! */}
-        <div className="overflow-hidden h-0 group-hover:h-12 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 mt-2">
+        {/* Responsive Reveal Button - Always visible on mobile, hover on desktop */}
+        <div className="overflow-hidden mt-2 transition-all duration-300 ease-in-out h-12 opacity-100 md:h-0 md:opacity-0 md:group-hover:h-12 md:group-hover:opacity-100">
           <button 
             onClick={() => addToCart(product, qty)}
             className="w-full bg-wood text-parchment py-3 rounded-xl font-medium transition-colors hover:bg-forest flex items-center justify-center gap-2"
