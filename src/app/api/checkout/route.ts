@@ -128,7 +128,7 @@ export async function POST(req: Request) {
     // 7. NEW: Send Order Confirmation Email via Resend
     try {
       await resend.emails.send({
-        from: 'Homelike Spice Co. <care@homelikespice.in>', // Make sure this matches your verified Resend domain
+        from: 'Homelike Spice Co. <homelikespices@gmail.com>', // Make sure this matches your verified Resend domain
         to: [customer.email],
         subject: `Order Confirmed: ${orderNumber} - Your spices are on the way!`,
         html: `
