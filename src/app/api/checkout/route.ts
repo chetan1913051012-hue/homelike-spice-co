@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { getServiceSupabase } from "@/lib/supabase";
+import { Resend } from "resend"; // 1. Added Resend import
+
+// 2. Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
@@ -119,6 +123,34 @@ export async function POST(req: Request) {
             .eq("id", item.id);
         }
       }
+    }
+
+    // 7. NEW: Send Order Confirmation Email via Resend
+    try {
+      await resend.emails.send({
+        from: 'Homelike Spice Co. <care@homelikespice.in>', // Make sure this matches your verified Resend domain
+        to: [customer.email],
+        subject: `Order Confirmed: ${orderNumber} - Your spices are on the way!`,
+        html: `
+          <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #221C16; font-family: 'Playfair Display', serif;">Hi ${customer.name},</h1>
+            <p style="color: #4a4a4a; line-height: 1.6;">Thank you for bringing the authentic taste of New Delhi into your kitchen.</p>
+            
+            <div style="background-color: #FDFBF7; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e5e5;">
+              <p style="margin: 0 0 10px 0;"><strong>Order Number:</strong> ${orderNumber}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Total Amount:</strong> ₹${totalAmount}</p>
+              <p style="margin: 0;"><strong>Payment Method:</strong> ${paymentMethod === "COD" ? "Cash on Delivery" : "Online"}</p>
+            </div>
+
+            <p style="color: #4a4a4a; line-height: 1.6;">We are hand-packing your spices in our custom boxes and will ship them shortly. We will send you the Shiprocket tracking link once dispatched.</p>
+            <br/>
+            <p style="color: #221C16; font-weight: bold;">Ghar jaisa swaad,<br/>The Homelike Spice Co. Team</p>
+          </div>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Failed to send confirmation email:", emailError);
+      // We don't throw an error here so the checkout still succeeds even if the email fails.
     }
 
     return NextResponse.json({
