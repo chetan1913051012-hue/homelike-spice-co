@@ -1,15 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { Trash2, Plus, Minus, MapPin } from "lucide-react";
+import { Trash2, Plus, Minus, MapPin, UserCircle2 } from "lucide-react";
 
 export default function CartPage() {
   const { items, updateQuantity, removeFromCart, clearCart, subtotal } = useCart();
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -23,6 +24,16 @@ export default function CartPage() {
 
   const deliveryCharge = subtotal >= 499 || subtotal === 0 ? 0 : 40;
   const total = subtotal + deliveryCharge;
+
+  // Check if the user is logged in when the cart loads
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      if (data.user) {
+        setCustomer(prev => ({ ...prev, email: data.user.email || "" }));
+      }
+    });
+  }, []);
 
   function handleLocateMe() {
     setLocating(true);
@@ -59,6 +70,10 @@ export default function CartPage() {
 
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
+    if (!user) {
+      alert("Please sign in to place an order.");
+      return;
+    }
     if (!/^\d{6}$/.test(customer.pin_code)) {
       alert("Please enter a valid 6-digit Indian PIN code.");
       return;
@@ -70,14 +85,11 @@ export default function CartPage() {
 
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // We automatically send "COD" as the only payment method now
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user?.id || null,
+          userId: user.id,
           customer,
           items,
           paymentMethod: "COD", 
@@ -87,7 +99,6 @@ export default function CartPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
 
-      // Clear the cart and show success screen immediately
       clearCart();
       setOrderSuccess(data.orderNumber);
 
@@ -197,87 +208,108 @@ export default function CartPage() {
             </div>
           </div>
 
-          {/* Checkout Form */}
-          <form
-            onSubmit={handleCheckout}
-            className="bg-white p-6 rounded-2xl border border-wood/10 space-y-4"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-wood">Delivery Details</h2>
-              <button 
-                type="button" 
-                onClick={handleLocateMe}
-                disabled={locating}
-                className="flex items-center gap-1.5 text-xs font-semibold bg-forest/10 text-forest px-3 py-1.5 rounded-full hover:bg-forest/20 transition"
+          {/* Checkout Section */}
+          {!user ? (
+            <div className="bg-white p-8 rounded-2xl border border-wood/10 flex flex-col items-center justify-center text-center space-y-5 shadow-sm h-fit">
+              <div className="bg-parchment p-4 rounded-full">
+                <UserCircle2 className="w-8 h-8 text-forest" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-wood">Almost there!</h2>
+                <p className="text-sm text-wood/75 mt-2">
+                  Please sign in or create a free account to securely place your order and track its delivery status.
+                </p>
+              </div>
+              <Link
+                href="/account"
+                className="w-full bg-forest text-white py-3.5 rounded-full font-semibold hover:bg-forest/90 transition block"
               >
-                <MapPin className="w-3.5 h-3.5" />
-                {locating ? "Locating..." : "Auto-Detect Address"}
-              </button>
+                Sign in to Checkout
+              </Link>
             </div>
-
-            <input
-              required
-              placeholder="Full Name"
-              value={customer.name}
-              onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-              className="w-full border rounded-lg px-4 py-2.5"
-            />
-            <input
-              required
-              type="email"
-              placeholder="Email Address"
-              value={customer.email}
-              onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-              className="w-full border rounded-lg px-4 py-2.5"
-            />
-            <input
-              required
-              placeholder="10-Digit Mobile Number"
-              value={customer.phone}
-              onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-              className="w-full border rounded-lg px-4 py-2.5"
-            />
-            <textarea
-              required
-              placeholder="Full Street Address & Landmark"
-              value={customer.address}
-              onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
-              className="w-full border rounded-lg px-4 py-2.5"
-            />
-            <div className="grid grid-cols-3 gap-3">
-              <input
-                required
-                placeholder="City"
-                value={customer.city}
-                onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-              <input
-                required
-                placeholder="State"
-                value={customer.state}
-                onChange={(e) => setCustomer({ ...customer, state: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-              <input
-                required
-                placeholder="PIN Code"
-                value={customer.pin_code}
-                onChange={(e) => setCustomer({ ...customer, pin_code: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-            </div>
-
-            <button
-              disabled={loading}
-              type="submit"
-              className="w-full bg-forest text-white py-3.5 rounded-full font-semibold hover:bg-forest/90 transition mt-4"
+          ) : (
+            <form
+              onSubmit={handleCheckout}
+              className="bg-white p-6 rounded-2xl border border-wood/10 space-y-4 shadow-sm"
             >
-              {loading
-                ? "Processing Order..."
-                : `Place COD Order (₹${total.toFixed(2)})`}
-            </button>
-          </form>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-wood">Delivery Details</h2>
+                <button 
+                  type="button" 
+                  onClick={handleLocateMe}
+                  disabled={locating}
+                  className="flex items-center gap-1.5 text-xs font-semibold bg-forest/10 text-forest px-3 py-1.5 rounded-full hover:bg-forest/20 transition"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  {locating ? "Locating..." : "Auto-Detect Address"}
+                </button>
+              </div>
+
+              <input
+                required
+                placeholder="Full Name"
+                value={customer.name}
+                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                className="w-full border rounded-lg px-4 py-2.5"
+              />
+              <input
+                required
+                type="email"
+                placeholder="Email Address"
+                value={customer.email}
+                onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                className="w-full border rounded-lg px-4 py-2.5 bg-parchment/30"
+                readOnly
+              />
+              <input
+                required
+                placeholder="10-Digit Mobile Number"
+                value={customer.phone}
+                onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                className="w-full border rounded-lg px-4 py-2.5"
+              />
+              <textarea
+                required
+                placeholder="Full Street Address & Landmark"
+                value={customer.address}
+                onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+                className="w-full border rounded-lg px-4 py-2.5"
+              />
+              <div className="grid grid-cols-3 gap-3">
+                <input
+                  required
+                  placeholder="City"
+                  value={customer.city}
+                  onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+                <input
+                  required
+                  placeholder="State"
+                  value={customer.state}
+                  onChange={(e) => setCustomer({ ...customer, state: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+                <input
+                  required
+                  placeholder="PIN Code"
+                  value={customer.pin_code}
+                  onChange={(e) => setCustomer({ ...customer, pin_code: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <button
+                disabled={loading}
+                type="submit"
+                className="w-full bg-forest text-white py-3.5 rounded-full font-semibold hover:bg-forest/90 transition mt-4"
+              >
+                {loading
+                  ? "Processing Order..."
+                  : `Place COD Order (₹${total.toFixed(2)})`}
+              </button>
+            </form>
+          )}
         </div>
       )}
     </div>
