@@ -4,31 +4,31 @@ import ProductCard from "@/components/ProductCard";
 export default function HomePage() {
   // Mock data for the homepage featured section
   const featuredProducts = [
-    {
-      slug: "lal-mirch",
-      name: "Lal Mirch Powder",
-      description: "Stemless Red Chilli • Stone-ground",
-      price: 75,
-      pack_size: "50g",
-      image_url: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=600&auto=format&fit=crop" // Temporary placeholder
-    },
-    {
-      slug: "haldi",
-      name: "Lakadong Haldi",
-      description: "High Curcumin • Sun-Dried Turmeric",
-      price: 65,
-      pack_size: "50g",
-      image_url: "https://images.unsplash.com/photo-1615486171448-6fc9f12d8a55?q=80&w=600&auto=format&fit=crop" // Temporary placeholder
-    },
-    {
-      slug: "dhania",
-      name: "Dhania Powder",
-      description: "Slow-Roasted • Coarse Ground Coriander",
-      price: 55,
-      pack_size: "50g",
-      image_url: "https://images.unsplash.com/photo-1599909622080-69f835b55de7?q=80&w=600&auto=format&fit=crop" // Temporary placeholder
-    }
-  ];
+  {
+    slug: "lal-mirch",
+    name: "Lal Mirch Powder",
+    description: "Stemless Red Chilli • Stone-ground",
+    price: 75,
+    pack_size: "50g",
+    image_url: "/images/mirch.jpg" // Changed to local path
+  },
+  {
+    slug: "haldi",
+    name: "Lakadong Haldi",
+    description: "High Curcumin • Sun-Dried Turmeric",
+    price: 65,
+    pack_size: "50g",
+    image_url: "/images/haldi.jpg" // Changed to local path
+  },
+  {
+    slug: "dhania",
+    name: "Dhania Powder",
+    description: "Slow-Roasted • Coarse Ground Coriander",
+    price: 55,
+    pack_size: "50g",
+    image_url: "/images/dhania.jpg" // Changed to local path
+  }
+];
 
   return (
     <main className="min-h-screen bg-[#FDFBF7]">
