@@ -1,7 +1,18 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Footer() {
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("*").eq("id", 1).single().then(({ data }) => {
+      if (data) setSettings(data);
+    });
+  }, []);
+
   return (
     <footer className="bg-parchment border-t border-wood/10 text-wood mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -11,7 +22,7 @@ export default function Footer() {
               src="/logo.png"
               alt="Homelike Spice Co. Official Logo"
               fill
-              className="object-contain"
+              className="object-contain p-2"
             />
           </div>
           <p className="font-bold text-lg">Homelike Spice Co.</p>
@@ -42,8 +53,12 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold mb-3 text-wood">Customer Support</h4>
           <p className="text-sm text-wood/80 mb-1">Location: New Delhi, India</p>
-          <p className="text-sm text-wood/80 mb-1">Email: [Insert Official Support Email]</p>
-          <p className="text-sm text-wood/80 mb-3">Phone: [Insert Support Phone]</p>
+          <p className="text-sm text-wood/80 mb-1">
+            Email: {settings?.support_email || "Loading..."}
+          </p>
+          <p className="text-sm text-wood/80 mb-3">
+            Phone: {settings?.support_phone || "Loading..."}
+          </p>
           <p className="text-xs text-wood/60">
             Estimated Preparation: 24–48 hrs | Estimated Delivery: 3–5 business days after dispatch.
           </p>
