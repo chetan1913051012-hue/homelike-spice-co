@@ -26,7 +26,7 @@ export default function HomePage() {
     description: "Slow-Roasted • Coarse Ground Coriander",
     price: 55,
     pack_size: "50g",
-    image_url: "/images/dhania.jpg" // Changed to local path
+    image_url: "/images/dhaniya.jpg" // Changed to local path
   }
 ];
 
