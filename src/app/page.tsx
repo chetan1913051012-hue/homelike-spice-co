@@ -80,6 +80,61 @@ export default function HomePage() {
             The foundation of every Indian kitchen. Beautifully packed, freshly ground, and delivered straight to your door in our custom Homelike Box.
           </p>
         </div>
+
+        {/* PROFESSIONAL PROCESS TIMELINE */}
+      <section className="bg-white text-[#221C16] py-24 px-4 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+              From Farm to Your Kitchen
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
+              We maintain absolute control over our supply chain to ensure the spices you cook with are as pure as the day they were harvested.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            {/* Step 1 */}
+            <div className="p-6 bg-[#FDFBF7] rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
+              <span className="text-[#1E3F20] text-5xl font-black opacity-20 mb-4 block">01</span>
+              <h3 className="text-xl font-bold mb-3">Direct Sourcing</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                We partner directly with farmers in Guntur, Erode, and Kerala. Every batch is tested for moisture and essential oils before acceptance.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="p-6 bg-[#FDFBF7] rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
+              <span className="text-[#1E3F20] text-5xl font-black opacity-20 mb-4 block">02</span>
+              <h3 className="text-xl font-bold mb-3">Traditional Pounding</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                No heat-generating industrial grinders. We use cold-pounding techniques to lock in volatile aromatic oils and rich natural colors.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="p-6 bg-[#FDFBF7] rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
+              <span className="text-[#1E3F20] text-5xl font-black opacity-20 mb-4 block">03</span>
+              <h3 className="text-xl font-bold mb-3">Lab Verification</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Every batch undergoes strict FSSAI-compliant testing for purity, ensuring absolutely zero artificial colors, fillers, or preservatives.
+              </p>
+            </div>
+
+            {/* Step 4 */}
+            <div className="p-6 bg-[#FDFBF7] rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
+              <span className="text-[#1E3F20] text-5xl font-black opacity-20 mb-4 block">04</span>
+              <h3 className="text-xl font-bold mb-3">Premium Packaging</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Packed in airtight, moisture-proof pouches to maintain peak freshness, shipped directly to your door anywhere in India.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
         
         {/* Reusing the ProductCard component we just built */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
