@@ -1,6 +1,18 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+const getDeviceId = () => {
+  if (typeof window === "undefined") return "server-fallback";
+  
+  let deviceId = localStorage.getItem("hls_device_id");
+  if (!deviceId) {
+    // Generates a unique string like "guest_8f7d9a..."
+    deviceId = `guest_${Math.random().toString(36).substring(2, 15)}`;
+    localStorage.setItem("hls_device_id", deviceId);
+  }
+  return deviceId;
+};
+
 export interface CartItem {
   id: string;
   name: string;
@@ -26,12 +38,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("homelike_cart");
+    const deviceId = getDeviceId();
+    const saved = localStorage.getItem(`homelike_cart_${deviceId}`);
     if (saved) setItems(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("homelike_cart", JSON.stringify(items));
+    const deviceId = getDeviceId();
+    localStorage.setItem(`homelike_cart_${deviceId}`, JSON.stringify(items));
   }, [items]);
 
   const addToCart = (product: Omit<CartItem, "quantity">, qty: number) => {
